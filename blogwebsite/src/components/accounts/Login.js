@@ -56,6 +56,11 @@ const Text = styled(Typography)`
   font-size:16px;
 `
 
+const loginInitialValues = {
+  username: '',
+  password: ''
+}
+
 const signupInitialValues = {
   name: '',
   username: '',
@@ -68,6 +73,7 @@ const Login = () => {
   const [account, toggleAccount] = useState('login');
   const [signup, setSignup] = useState(signupInitialValues);
   const [error, setError] = useState('');
+  const [login, setLogin] = useState(loginInitialValues);
 
   const toggleSignup = () => {
     account === 'signup' ? toggleAccount('login') : toggleAccount('signup');
@@ -84,7 +90,19 @@ const Login = () => {
       setSignup(signupInitialValues);
       toggleAccount('login');
     } else {
-      setError('Something went wrong! Please try again later')
+      setError('Something went wrong! Please try again later');
+    }
+  }
+
+  const onValueChange = (e) => {
+    setLogin({ ...login, [e.target.name]: e.target.value });
+  }
+  const loginUser = async () => {
+    let response = await API.userLogin(login);
+    if (response.isSuccess) {
+      setError('');
+    } else {
+      setError("Something went wrong! Please try again later..!");
     }
   }
 
@@ -95,12 +113,12 @@ const Login = () => {
         {
           account === 'login' ?
             <Wrapper>
-              <TextField variant="standard" label="Enter Username" />
-              <TextField variant="standard" label="Enter Password" />
+              <TextField variant="standard" name='username' value={login.username} onChange={(e) => onValueChange(e)} label="Enter Username" />
+              <TextField variant="standard" name='password' value={login.password} onChange={(e) => onValueChange(e)} label="Enter Password" />
 
               {error && <Error>{error}</Error>}
 
-              <Loginbutton variant="contained">Login</Loginbutton>
+              <Loginbutton variant="contained" onClick={() => { loginUser() }}>Login</Loginbutton>
               <Typography style={{ textAlign: 'center' }}>OR</Typography>
               <Signupbutton onClick={() => toggleSignup()}>Create an Account</Signupbutton>
             </Wrapper>
@@ -123,3 +141,8 @@ const Login = () => {
 }
 
 export default Login
+
+
+
+
+
